@@ -3,7 +3,7 @@ from tqdm import tqdm
 from matplotlib import pyplot as plt
 
 class Env:
-    def __init__(self, init_state = 0, p = 0.5, r = [1, 0]):
+    def __init__(self, init_state = 0, p_head = 0.5, r_head = 1, r_tail = 0):
         # State: 0 = Head, 1 = Tail
         # Action: 0 = Flip, 1 = Pass
         # Reward: 1 if Head, 0 if Tail
@@ -19,8 +19,10 @@ class Env:
         self.action_space_dim = len(self.action_space)
         self.init_state = init_state
 
-        self.p = p
-        self.transition_prob = np.array([[[self.p, 1-self.p], [1, 0]], [[1-self.p, self.p], [0, 1]]]) # P(s'|s,a)
+        self.p_head = p_head
+        self.p_tail = 1 - p_head
+        r = np.array([r_head, r_tail])
+        self.transition_prob = np.array([[[self.p_head, 1-self.p_head], [1, 0]], [[1-self.p_head, self.p_head], [0, 1]]]) # P(s'|s,a)
         self.reward = np.tile(r, (self.state_space_dim, self.state_space_dim))  # R(s,s')
 
     def step(self, action):
@@ -52,10 +54,11 @@ class Env:
         return 'Flip' if action == 0 else 'Pass'
 
 if __name__ == '__main__':
-    p = 0.5 # Unbiased coin
-    r = [1, 0]
+    p_head = 0.5 # Unbiased coin
+    r_head = 1
+    r_tail = 0
     gamma = 0.99
-    env = Env(p = p, r = r)
+    env = Env(p_head = p_head, r_head = r_head, r_tail = r_tail)
     uniform_policy = np.ones((env.state_space_dim, env.action_space_dim)) / env.action_space_dim
     true_v = env.true_v(uniform_policy, gamma = gamma)
     print(f'V(Head) = {true_v[0]:.2f}, V(Tail) = {true_v[1]:.2f}')

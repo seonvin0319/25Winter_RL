@@ -64,10 +64,11 @@ if __name__ == '__main__':
     from Environment.coin_toss import Env
     import matplotlib.pyplot as plt
 
-    p = 0.5 # Unbiased coin
-    r = [1, 0]
+    p_head = 0.5 # Unbiased coin
+    r_head = 1
+    r_tail = 0
     gamma = 0.9
-    env = Env(p = p, r = r)
+    env = Env(p_head = p_head, r_head = r_head, r_tail = r_tail)
     policy = np.ones((env.state_space_dim, env.action_space_dim)) / env.action_space_dim
 
     v, v_history = policy_eval(env, policy, gamma = gamma, history = True)
