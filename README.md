@@ -60,11 +60,11 @@
 
 #### Funtions
 - `policy_eval(env, policy, history = False)`:
-  - `Dynamic Programming`에 따라 주어진 `env`에서의 `policy evaluation`을 수행하고 `V(s)`를 반환
+  - Dynamic Programming에 따라 주어진 `env`에서의 policy evaluation을 수행하고 `V(s)`를 반환
   - 만약 `history == True`이면 `V(s)`와 함께 iteration의 `history`를 반환
 
 - `policy_improvement(env, policy, v)`:
-  - `Dynamic Programming`에 따라 주어진 `env, policy, v(s)`에 대해 policy improvement를 수행하고 새로운 `policy`를 반환
+  - Dynamic Programming에 따라 주어진 `(env, policy, v(s))`에 대해 policy improvement를 수행하고 새로운 `policy`를 반환
 
 - `policy_iteration(env, init_policy)`:
-  -`init_policy`로 부터의 `policy_iteration`을 통해 `optimal policy`를 반환
+  - `init_policy`로 부터의 policy iteration을 통해 `optimal policy`를 반환
