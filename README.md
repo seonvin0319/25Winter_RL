@@ -56,7 +56,7 @@
 
 ## Algorithms
 
-### Dynamic_Programming
+### Dynamic_Programming.py
 
 #### Funtions
 - `policy_eval(env, policy, history = False)`:
