@@ -49,7 +49,22 @@
   - 환경을 특정 `state`로 초기화  
   - 만약 `state == None`이면 `init_state`로 리셋
 
-- `tru_v(policy)`:  
+- `true_v(policy)`:  
   - 주어진 `policy`에 대한 이론적 가치 함수 계산
 
+---
 
+## Algorithms
+
+### Dynamic_Programming
+
+#### Funtions
+- `policy_eval(env, policy, history = False)`:
+  - `Dynamic Programming`에 따라 주어진 `env`에서의 `policy evaluation`을 수행하고 `V(s)`를 반환
+  - 만약 `history == True`이면 `V(s)`와 함께 iteration의 `history`를 반환
+
+- `policy_improvement(env, policy, v)`:
+  - `Dynamic Programming`에 따라 주어진 `env, policy, v(s)`에 대해 policy improvement를 수행하고 새로운 `policy`를 반환
+
+- `policy_iteration(env, init_policy)`:
+  -`init_policy`로 부터의 `policy_iteration`을 통해 `optimal policy`를 반환
