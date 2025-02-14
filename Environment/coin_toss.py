@@ -42,6 +42,14 @@ class Env:
         return self.state
 
     def true_v(self, policy, gamma = 0.99):
+        """
+        Parameters
+        ----------
+        policy : numpy.ndarray
+            Policy matrix of shape (state_space_dim, action_space_dim)
+        gamma : float
+            Discount factor
+        """
         p1 = policy[0, 0]
         p2 = policy[1, 0]
         den = 2 - (2-p1-p2) * gamma
@@ -50,6 +58,12 @@ class Env:
         return np.array([v1, v2])
     
     def true_q(self, v):
+        """
+        Parameters
+        ----------
+        v : numpy.ndarray
+            Value function of shape (state_space_dim,)
+        """
         q = np.zeros((self.state_space_dim, self.action_space_dim))
         q[0, 0] = self.p_head * v[0] + (1 - self.p_head) * v[1]
         q[0, 1] = v[0]
