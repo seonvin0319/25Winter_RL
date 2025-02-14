@@ -1,5 +1,5 @@
 from Algorithms.Dynamic_Programming import Dynamic_Programming
-from Algorithms.Monte_Calro import Monte_Calro
+from Algorithms.Monte_Carlo import Monte_Carlo
 from Algorithms.TD import TD
 from utils import Policy
 
@@ -7,7 +7,7 @@ class Tabular:
     def __init__(self, env):
         self.env = env
         self.dynamic_programming = Dynamic_Programming(env)
-        self.monte_calro = Monte_Calro(env)
+        self.monte_carlo = Monte_Carlo(env)
         self.td = TD(env)
         self.policy_class = Policy(env)
 
@@ -29,9 +29,9 @@ class Tabular:
         if method == "DP":
             return self.dynamic_programming.policy_eval(policy, **kwargs)
         elif method == "on-policy MC":
-            return self.monte_calro.first_visit_mc_prediction(policy, **kwargs)
+            return self.monte_carlo.first_visit_mc_prediction(policy, **kwargs)
         elif method == "off-policy MC":
-            return self.monte_calro.off_policy_mc_prediction(policy, **kwargs)
+            return self.monte_carlo.off_policy_mc_prediction(policy, **kwargs)
         elif method == "TD":
             return self.td.td_prediction(policy, **kwargs)
         else:
@@ -57,9 +57,9 @@ class Tabular:
         elif method == "value iteration":
             return self.dynamic_programming.value_iteration(**kwargs)
         elif method == "on-policy MC":
-            return self.monte_calro.on_policy_first_visit_mc_control(**kwargs)
+            return self.monte_carlo.on_policy_first_visit_mc_control(**kwargs)
         elif method == "off-policy MC":
-            return self.monte_calro.off_policy_mc_control(**kwargs)
+            return self.monte_carlo.off_policy_mc_control(**kwargs)
         elif method == "SARSA" or method == 'sarsa':
             return self.td.sarsa(**kwargs)
         elif method == "Q-LEARNING" or method == 'q-learning':

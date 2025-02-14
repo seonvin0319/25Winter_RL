@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 from utils import Policy, rollout
 
-class Monte_Calro:
+class Monte_Carlo:
     def __init__(self, env):
         self.env = env
         self.policy_class = Policy(env)
@@ -131,6 +131,7 @@ class Monte_Calro:
             Whether to show progress
         """
         uniform_policy = self.policy_class.uniform_random_policy()
+        policy = np.zeros((self.env.state_space_dim, self.env.action_space_dim))
         q = np.random.randn(self.env.state_space_dim, self.env.action_space_dim)
         c = np.zeros((self.env.state_space_dim, self.env.action_space_dim))
         for _ in tqdm(range(max_episode_num), desc="Episode", disable=not show_progress):
@@ -143,11 +144,13 @@ class Monte_Calro:
                 c[state, action] += W
                 q[state, action] += (W/c[state, action])*(G - q[state, action])
                 if epsilon_greedy:
-                    policy = self.policy_class.epsilon_greedy_policy(q, epsilon)
+                    policy[state] = self.policy_class.epsilon_greedy_policy(q, epsilon)[state]
                 else:
-                    policy = self.policy_class.greedy_policy(q)
-                if action == policy[state, 0]:
-                    W = W * (1/uniform_policy[state, action])
+                    policy[state] = self.policy_class.greedy_policy(q)[state]
+                best_action = np.argmax(policy[state])
+                if action == best_action:
+                    W = W * (1 / uniform_policy[state, action])
                 else:
                     break
+
         return q, policy

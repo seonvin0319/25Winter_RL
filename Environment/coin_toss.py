@@ -23,6 +23,8 @@ class Env:
 
         self.p_head = p_head
         self.p_tail = 1 - p_head
+        self.r_head = r_head
+        self.r_tail = r_tail
         r = np.array([r_head, r_tail])
         self.transition_prob = np.array([[[self.p_head, 1-self.p_head], [1, 0]], [[1-self.p_head, self.p_head], [0, 1]]]) # P(s'|s,a)
         self.reward = np.tile(r, (self.state_space_dim, self.state_space_dim))  # R(s,s')
@@ -50,14 +52,20 @@ class Env:
         gamma : float
             Discount factor
         """
-        p1 = policy[0, 0]
-        p2 = policy[1, 0]
-        den = 2 - (2-p1-p2) * gamma
-        v1 = 1/(1-gamma)*(1-p1/den)
-        v2 = 1/(1-gamma)*p2/den
-        return np.array([v1, v2])
+        p_th = policy[0, 0]
+        p_tt = policy[1, 0]
+        tr_h = self.p_head
+        g = gamma
+        r_h = self.r_head
+        r_t = self.r_tail
+        Den = g**2*p_th*tr_h - g**2*p_th - g**2*p_tt*tr_h + g**2 - g*p_th*tr_h + g*p_th + g*p_tt*tr_h - 2*g + 1
+        num_vh = -g*p_th*r_h*tr_h + g*p_th*r_h + g*p_tt*r_h*tr_h - g*r_h + p_th*r_h*tr_h - p_th*r_h - p_th*r_t*tr_h + p_th*r_t + r_h
+        num_vt = -g*p_th*r_t*tr_h + g*p_th*r_t + g*p_tt*r_t*tr_h - g*r_t + p_tt*r_h*tr_h - p_tt*r_t*tr_h + r_t
+        v_h = num_vh / Den
+        v_t = num_vt / Den
+        return np.array([v_h, v_t])
     
-    def true_q(self, v):
+    def true_q(self, v, gamma = 0.99):
         """
         Parameters
         ----------
@@ -65,10 +73,11 @@ class Env:
             Value function of shape (state_space_dim,)
         """
         q = np.zeros((self.state_space_dim, self.action_space_dim))
-        q[0, 0] = self.p_head * v[0] + (1 - self.p_head) * v[1]
-        q[0, 1] = v[0]
-        q[1, 0] = q[0, 0]
-        q[1, 1] = v[1]
+        for s in self.state_space:
+            for a in self.action_space:
+                p_sa = self.transition_prob[s, a]
+                for next_s in self.state_space:
+                    q[s, a] += p_sa[next_s] * (self.reward[s, next_s] + gamma * v[next_s])
         return q
     
     def state_to_str(self, state):

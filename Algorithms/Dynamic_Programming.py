@@ -92,7 +92,7 @@ class Dynamic_Programming:
                 break
         return policy
 
-    def policy_iteration(self, init_policy = None, gamma=0.99, threshold=1e-3, max_iter=10):
+    def policy_iteration(self, init_policy = None, gamma=0.99, threshold=1e-3, max_iter=100):
         """
         Parameters
         ----------
@@ -109,13 +109,24 @@ class Dynamic_Programming:
             policy_old = self.policy_class.uniform_random_policy()
         else:
             policy_old = init_policy
+        iter_num = 0
         while True:
             v = self.policy_eval(policy_old, gamma=gamma, threshold=threshold, max_iter=max_iter)
             policy = self.policy_improvement(policy_old, v, gamma=gamma, threshold=threshold, max_iter=max_iter)
             if np.max(np.abs(policy - policy_old)) < threshold:
                 break
             policy_old = policy
-        return v, policy
+            iter_num += 1
+            if iter_num > max_iter:
+                break
+        v = self.policy_eval(policy, gamma=gamma, threshold=threshold, max_iter=max_iter)
+        q = np.zeros((self.env.state_space_dim, self.env.action_space_dim))
+        for state in range(self.env.state_space_dim):
+            for action in range(self.env.action_space_dim):
+                p_sas = self.env.transition_prob[state, action]
+                for next_state in range(self.env.state_space_dim):
+                    q[state, action] += p_sas[next_state] * (self.env.reward[state, next_state] + gamma * v[next_state])
+        return q, policy
     
     def value_iteration(self, gamma=0.99, threshold=1e-3, max_iter=10):
         """
@@ -150,4 +161,10 @@ class Dynamic_Programming:
             iter_num += 1
             if iter_num > max_iter:
                 break
-        return v, policy
+        q = np.zeros((self.env.state_space_dim, self.env.action_space_dim))
+        for state in range(self.env.state_space_dim):
+            for action in range(self.env.action_space_dim):
+                p_sas = self.env.transition_prob[state, action]
+                for next_state in range(self.env.state_space_dim):
+                    q[state, action] += p_sas[next_state] * (self.env.reward[state, next_state] + gamma * v[next_state])
+        return q, policy
