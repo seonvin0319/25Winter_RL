@@ -121,7 +121,8 @@
   - `alpha`: learning rate
   - `max_episode_num`: 최대 episode 개수
   - `max_episode_length`: episode 길이
-  - `show_progress`: rollout 상황 출력 여부
+  - `epsilon_greedy`: epsilon-greedy policy 사용 여부
+  - `epsilon`: epsilon-greedy policy의 epsilon
 
 #### Funtions
 - `td_prediction(env, policy)`:
