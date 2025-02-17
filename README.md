@@ -16,11 +16,15 @@
 ```
 ├── Algorithms
 │   ├── Dynamic_Programming.py
+│   ├── Monte_Carlo.py
+│   ├── TD.py
+│   └── Tabular.py
 ├── Environment
 │   └── coin_toss.py
 ├── LICENSE
 ├── README.md
-└── main.py
+├── main.py
+└── utils.py
 ```
 
 ---
@@ -57,6 +61,12 @@
 ## Algorithms
 
 ### Dynamic_Programming.py
+- kwargs
+  - `env`: 환경
+  - `gamma`: discount factor
+  - `threshold`: $\delta V < \text{threshold}$이면 중단
+  - `max_iter`: 최대 반복 횟수
+  - `return_q`: 가치 함수 대신 Q-함수를 반환할지 여부
 
 #### Funtions
 - `policy_eval(env, policy, history = False)`:
@@ -67,4 +77,59 @@
   - Dynamic Programming에 따라 주어진 `(env, policy, v(s))`에 대해 policy improvement를 수행하고 새로운 `policy`를 반환
 
 - `policy_iteration(env, init_policy)`:
-  - `init_policy`로 부터의 policy iteration을 통해 `optimal policy`를 반환
+  - `init_policy`로 부터의 policy iteration을 통해 `v(s), optimal policy`를 반환
+  - 만약 `return_q == True`이면 `q(s, a), optimal policy`를 반환
+
+- `value_iteration(env, init_v)`:
+  - `init_v`로 부터의 value iteration을 통해 `v(s), optimal policy`를 반환
+  - 만약 `return_q == True`이면 `q(s, a), optimal policy`를 반환
+
+---
+
+### Monte_Carlo.py
+- kwargs
+  - `env`: 환경
+  - `gamma`: discount factor
+  - `max_episode_num`: rollout의 episode 수
+  - `max_episode_length`: rollout의 episode 길이
+  - `show_progress`: rollout 상황 출력 여부
+
+#### Funtions
+- `first_visit_mc_prediction(env, policy, max_episode_num = 100, max_episode_length = 1000, gamma = 0.99, show_progress = False)`:
+  - Monte Carlo에 따라 주어진 `env`에서의 first visit MC prediction을 수행하고 `v(s)`를 반환
+
+- `off_policy_mc_prediction(env, policy, max_episode_num = 100, max_episode_length = 1000, gamma = 0.99, show_progress = False)`:
+  - Monte Carlo에 따라 주어진 `env`에서의 off-policy MC prediction을 수행하고 `q(s, a)`를 반환
+
+- `on_policy_first_visit_mc_control(env, max_episode_num = 100, max_episode_length = 1000, gamma = 0.99, epsilon = 0.1, exploring_start = True, show_progress = False)`:
+  - Monte Carlo에 따라 주어진 `env`에서의 on-policy first visit MC control을 수행하고 `q(s, a), optimal policy`를 반환
+
+- `off_policy_mc_control(env, behavior_policy, max_episode_num = 100, max_episode_length = 1000, gamma = 0.99, show_progress = False, Polyak_Ruppert = False)`:
+  - Monte Carlo에 따라 주어진 `env`에서의 off-policy MC control을 수행하고 `q(s, a), optimal policy`를 반환
+  - 만약 `Polyak_Ruppert == True`이면 `Polyak-Ruppert averaging`을 사용하여 `q(s, a), optimal policy`를 반환
+
+---
+
+### TD.py
+- kwargs
+  - `env`: 환경
+  - `gamma`: discount factor
+  - `alpha`: learning rate
+  - `max_episode_num`: 최대 episode 개수
+  - `max_episode_length`: episode 길이
+  - `show_progress`: rollout 상황 출력 여부
+
+#### Funtions
+- `td_prediction(env, policy, max_episode_num = 100, max_episode_length = 1000, gamma = 0.99, show_progress = False)`:
+  - TD에 따라 주어진 `env`에서의 TD prediction을 수행하고 `v(s)`를 반환
+
+- `sarsa(env, gamma = 0.99, alpha = 0.1, epsilon = 0.1, max_episode_num = 100, max_episode_length = 1000, epsilon_greedy = True)`:
+  - TD에 따라 주어진 `env`에서의 SARSA를 수행하고 `q(s, a), optimal policy`를 반환
+
+- `q_learning(env, gamma = 0.99, alpha = 0.1, epsilon = 0.1, max_episode_num = 100, max_episode_length = 1000, epsilon_greedy = True)`:
+  - TD에 따라 주어진 `env`에서의 Q-learning을 수행하고 `q(s, a), optimal policy`를 반환
+
+- `double_q_learning(env, gamma = 0.99, alpha = 0.1, epsilon = 0.1, max_episode_num = 100, max_episode_length = 1000, epsilon_greedy = True)`:
+  - TD에 따라 주어진 `env`에서의 double Q-learning을 수행하고 `q(s, a), optimal policy`를 반환
+
+---
