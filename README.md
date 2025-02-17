@@ -1,16 +1,20 @@
 # IISL 2025 겨울 강화학습 스터디
 
-## 스터디 일정
+## 스터디 일정 (예정)
 - **2025-02-12**  
   - Ch.3 (Finite MDP), Ch.4 (DP)
 - **2025-02-19**  
   - Ch.5 (MC), Ch.6 (TD)
 - **2025-02-26**  
-  - Ch.13 (Policy Gradient)
+  - Ch.13 (Policy Gradient), Policy Gradient Paper
 - **2025-03-05**  
-  - DQN
-
----
+  - DQN Paper
+- **2025-03-12**  
+  - DDPG Paper
+- **2025-03-19**
+  - TRPO, PPO Paper
+- **2025-03-26**
+  - SAC Paper
 
 ## 파일 구조 (업데이트 예정)
 ```
@@ -95,16 +99,16 @@
   - `show_progress`: rollout 상황 출력 여부
 
 #### Funtions
-- `first_visit_mc_prediction(env, policy, max_episode_num = 100, max_episode_length = 1000, gamma = 0.99, show_progress = False)`:
+- `first_visit_mc_prediction(env, policy)`:
   - Monte Carlo에 따라 주어진 `env`에서의 first visit MC prediction을 수행하고 `v(s)`를 반환
 
-- `off_policy_mc_prediction(env, policy, max_episode_num = 100, max_episode_length = 1000, gamma = 0.99, show_progress = False)`:
+- `off_policy_mc_prediction(env, policy)`:
   - Monte Carlo에 따라 주어진 `env`에서의 off-policy MC prediction을 수행하고 `q(s, a)`를 반환
 
-- `on_policy_first_visit_mc_control(env, max_episode_num = 100, max_episode_length = 1000, gamma = 0.99, epsilon = 0.1, exploring_start = True, show_progress = False)`:
+- `on_policy_first_visit_mc_control(env)`:
   - Monte Carlo에 따라 주어진 `env`에서의 on-policy first visit MC control을 수행하고 `q(s, a), optimal policy`를 반환
 
-- `off_policy_mc_control(env, behavior_policy, max_episode_num = 100, max_episode_length = 1000, gamma = 0.99, show_progress = False, Polyak_Ruppert = False)`:
+- `off_policy_mc_control(env, behavior_policy, Polyak_Ruppert = False)`:
   - Monte Carlo에 따라 주어진 `env`에서의 off-policy MC control을 수행하고 `q(s, a), optimal policy`를 반환
   - 만약 `Polyak_Ruppert == True`이면 `Polyak-Ruppert averaging`을 사용하여 `q(s, a), optimal policy`를 반환
 
@@ -120,16 +124,16 @@
   - `show_progress`: rollout 상황 출력 여부
 
 #### Funtions
-- `td_prediction(env, policy, max_episode_num = 100, max_episode_length = 1000, gamma = 0.99, show_progress = False)`:
+- `td_prediction(env, policy)`:
   - TD에 따라 주어진 `env`에서의 TD prediction을 수행하고 `v(s)`를 반환
 
-- `sarsa(env, gamma = 0.99, alpha = 0.1, epsilon = 0.1, max_episode_num = 100, max_episode_length = 1000, epsilon_greedy = True)`:
+- `sarsa(env)`:
   - TD에 따라 주어진 `env`에서의 SARSA를 수행하고 `q(s, a), optimal policy`를 반환
 
-- `q_learning(env, gamma = 0.99, alpha = 0.1, epsilon = 0.1, max_episode_num = 100, max_episode_length = 1000, epsilon_greedy = True)`:
+- `q_learning(env)`:
   - TD에 따라 주어진 `env`에서의 Q-learning을 수행하고 `q(s, a), optimal policy`를 반환
 
-- `double_q_learning(env, gamma = 0.99, alpha = 0.1, epsilon = 0.1, max_episode_num = 100, max_episode_length = 1000, epsilon_greedy = True)`:
+- `double_q_learning(env)`:
   - TD에 따라 주어진 `env`에서의 double Q-learning을 수행하고 `q(s, a), optimal policy`를 반환
 
 ---
