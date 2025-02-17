@@ -6,6 +6,14 @@ class TD:
         self.policy_class = Policy(env)
 
     def td_prediction(self, policy, gamma=0.99, alpha=0.1, max_episode_num = 100, max_episode_length = 1000):
+        """
+        Parameters
+        ----------
+        policy : np.ndarray
+            Policy to use for TD prediction
+        gamma : float
+            Discount factor
+        """
         v = np.zeros(self.env.state_space_dim)
         for _ in range(max_episode_num):
             S = self.env.reset()
@@ -19,6 +27,22 @@ class TD:
         return v
 
     def sarsa(self, gamma=0.99, alpha=0.1, epsilon=0.1, max_episode_num = 100, max_episode_length = 1000, epsilon_greedy = True):
+        """
+        Parameters
+        ----------
+        gamma : float
+            Discount factor
+        alpha : float
+            Learning rate
+        epsilon : float
+            Epsilon for epsilon-greedy policy
+        max_episode_num : int
+            Maximum number of episodes
+        max_episode_length : int
+            Maximum length of episode
+        epsilon_greedy : bool
+            Whether to use epsilon-greedy policy
+        """
         q = np.random.randn(self.env.state_space_dim, self.env.action_space_dim)
         self.policy_class.iter_num = 0
         policy = self.policy_class.epsilon_greedy_policy(q, epsilon)
@@ -40,6 +64,22 @@ class TD:
         return q, policy
     
     def q_learning(self, gamma=0.99, alpha=0.1, epsilon=0.1, max_episode_num = 100, max_episode_length = 1000, epsilon_greedy = True):
+        """
+        Parameters
+        ----------
+        gamma : float
+            Discount factor
+        alpha : float
+            Learning rate
+        epsilon : float
+            Epsilon for epsilon-greedy policy
+        max_episode_num : int
+            Maximum number of episodes
+        max_episode_length : int
+            Maximum length of episode
+        epsilon_greedy : bool
+            Whether to use epsilon-greedy policy
+        """
         q = np.random.randn(self.env.state_space_dim, self.env.action_space_dim)
         self.policy_class.iter_num = 0
         policy = self.policy_class.epsilon_greedy_policy(q, epsilon)
@@ -59,6 +99,22 @@ class TD:
         return q, policy
     
     def double_q_learning(self, gamma=0.99, alpha=0.1, epsilon=0.1, max_episode_num = 100, max_episode_length = 1000, epsilon_greedy = True):
+        """
+        Parameters
+        ----------
+        gamma : float
+            Discount factor
+        alpha : float
+            Learning rate
+        epsilon : float
+            Epsilon for epsilon-greedy policy
+        max_episode_num : int
+            Maximum number of episodes
+        max_episode_length : int
+            Maximum length of episode
+        epsilon_greedy : bool
+            Whether to use epsilon-greedy policy
+        """
         q1 = np.random.randn(self.env.state_space_dim, self.env.action_space_dim)
         q2 = np.random.randn(self.env.state_space_dim, self.env.action_space_dim)
         self.policy_class.iter_num = 0
