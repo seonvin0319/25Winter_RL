@@ -92,7 +92,7 @@ class Dynamic_Programming:
                 break
         return policy
 
-    def policy_iteration(self, init_policy = None, gamma=0.99, threshold=1e-3, max_iter=100):
+    def policy_iteration(self, init_policy = None, gamma=0.99, threshold=1e-3, max_iter=100, return_q = False):
         """
         Parameters
         ----------
@@ -104,6 +104,8 @@ class Dynamic_Programming:
             Threshold for the policy
         max_iter : int
             Maximum number of iterations
+        return_q : bool
+            Whether to return the Q-function
         """
         if init_policy is None:
             policy_old = self.policy_class.uniform_random_policy()
@@ -120,15 +122,17 @@ class Dynamic_Programming:
             if iter_num > max_iter:
                 break
         v = self.policy_eval(policy, gamma=gamma, threshold=threshold, max_iter=max_iter)
-        q = np.zeros((self.env.state_space_dim, self.env.action_space_dim))
-        for state in range(self.env.state_space_dim):
-            for action in range(self.env.action_space_dim):
-                p_sas = self.env.transition_prob[state, action]
-                for next_state in range(self.env.state_space_dim):
-                    q[state, action] += p_sas[next_state] * (self.env.reward[state, next_state] + gamma * v[next_state])
-        return q, policy
+        if return_q:
+            q = np.zeros((self.env.state_space_dim, self.env.action_space_dim))
+            for state in range(self.env.state_space_dim):
+                for action in range(self.env.action_space_dim):
+                    p_sas = self.env.transition_prob[state, action]
+                    for next_state in range(self.env.state_space_dim):
+                        q[state, action] += p_sas[next_state] * (self.env.reward[state, next_state] + gamma * v[next_state])
+            return q, policy
+        return v, policy
     
-    def value_iteration(self, gamma=0.99, threshold=1e-3, max_iter=10):
+    def value_iteration(self, gamma=0.99, threshold=1e-3, max_iter=10, return_q = False):
         """
         Parameters
         ----------
@@ -138,6 +142,8 @@ class Dynamic_Programming:
             Threshold for the value function
         max_iter : int
             Maximum number of iterations
+        return_q : bool
+            Whether to return the Q-function
         """
         v = np.zeros((self.env.state_space_dim))
         policy = np.zeros((self.env.state_space_dim, self.env.action_space_dim))
@@ -161,10 +167,12 @@ class Dynamic_Programming:
             iter_num += 1
             if iter_num > max_iter:
                 break
-        q = np.zeros((self.env.state_space_dim, self.env.action_space_dim))
-        for state in range(self.env.state_space_dim):
-            for action in range(self.env.action_space_dim):
-                p_sas = self.env.transition_prob[state, action]
-                for next_state in range(self.env.state_space_dim):
-                    q[state, action] += p_sas[next_state] * (self.env.reward[state, next_state] + gamma * v[next_state])
-        return q, policy
+        if return_q:
+            q = np.zeros((self.env.state_space_dim, self.env.action_space_dim))
+            for state in range(self.env.state_space_dim):
+                for action in range(self.env.action_space_dim):
+                    p_sas = self.env.transition_prob[state, action]
+                    for next_state in range(self.env.state_space_dim):
+                        q[state, action] += p_sas[next_state] * (self.env.reward[state, next_state] + gamma * v[next_state])
+            return q, policy
+        return v, policy
