@@ -68,7 +68,7 @@
 - kwargs
   - `env`: 환경
   - `gamma`: discount factor
-  - `threshold`: $\delta V < \text{threshold}$이면 중단
+  - `threshold`: $\Delta V < \text{threshold}$이면 중단
   - `max_iter`: 최대 반복 횟수
   - `return_q`: 가치 함수 대신 Q-함수를 반환할지 여부
 
