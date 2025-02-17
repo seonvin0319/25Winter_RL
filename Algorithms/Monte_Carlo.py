@@ -54,6 +54,7 @@ class Monte_Carlo:
         show_progress : bool
             Whether to show progress
         """
+        self.policy_class.iter_num = 0
         uniform_policy = self.policy_class.uniform_random_policy() # Behavior Policy
         q = np.random.randn(self.env.state_space_dim, self.env.action_space_dim)
         c = np.zeros((self.env.state_space_dim, self.env.action_space_dim))
@@ -89,6 +90,7 @@ class Monte_Carlo:
         show_progress : bool
             Whether to show progress
         """
+        self.policy_class.iter_num = 0
         policy = self.policy_class.uniform_random_policy()
         q = np.zeros((self.env.state_space_dim, self.env.action_space_dim))
         returns = {}
@@ -113,10 +115,12 @@ class Monte_Carlo:
                     policy = self.policy_class.epsilon_greedy_policy(q, epsilon)
         return q, policy
 
-    def off_policy_mc_control(self, max_episode_num=100, max_episode_length=1000, gamma=0.99, epsilon=0.1, epsilon_greedy = True, show_progress = False):
+    def off_policy_mc_control(self, behavior_policy = None, max_episode_num=100, max_episode_length=1000, gamma=0.99, show_progress = False, Polyak_Ruppert = False):
         """
         Parameters
         ----------
+        behavior_policy : numpy.ndarray
+            Behavior policy matrix of shape (state_space_dim, action_space_dim)
         max_episode_num : int
             Maximum number of episodes
         max_episode_length : int
@@ -129,13 +133,20 @@ class Monte_Carlo:
             Whether to use epsilon-greedy policy
         show_progress : bool
             Whether to show progress
+        Polyak_Ruppert : bool
+            Whether to use Polyak-Ruppert
         """
-        uniform_policy = self.policy_class.uniform_random_policy()
+        self.policy_class.iter_num = 0
+        if behavior_policy is None:
+            behavior_policy = self.policy_class.uniform_random_policy()
         policy = np.zeros((self.env.state_space_dim, self.env.action_space_dim))
-        q = np.random.randn(self.env.state_space_dim, self.env.action_space_dim)
+        q = np.zeros((self.env.state_space_dim, self.env.action_space_dim))
         c = np.zeros((self.env.state_space_dim, self.env.action_space_dim))
+        if Polyak_Ruppert:
+            q_avg = np.zeros((self.env.state_space_dim, self.env.action_space_dim))
+            n_updates = np.zeros((self.env.state_space_dim, self.env.action_space_dim))
         for _ in tqdm(range(max_episode_num), desc="Episode", disable=not show_progress):
-            buffer = rollout(self.env, uniform_policy, max_episode_length=max_episode_length)
+            buffer = rollout(self.env, behavior_policy, max_episode_length=max_episode_length)
             G = 0
             W = 1
             while buffer:
@@ -143,14 +154,23 @@ class Monte_Carlo:
                 G = reward + gamma*G
                 c[state, action] += W
                 q[state, action] += (W/c[state, action])*(G - q[state, action])
-                if epsilon_greedy:
-                    policy[state] = self.policy_class.epsilon_greedy_policy(q, epsilon)[state]
-                else:
-                    policy[state] = self.policy_class.greedy_policy(q)[state]
-                best_action = np.argmax(policy[state])
-                if action == best_action:
-                    W = W * (1 / uniform_policy[state, action])
+                max_q = np.max(q[state])
+                best_actions = np.where(q[state] == max_q)[0]
+                policy[state, best_actions] = 1 / len(best_actions)
+                if Polyak_Ruppert:
+                    n_updates[state, action] += 1
+                    step_size = 1 / n_updates[state, action]
+                    q_avg[state, action] += step_size * (q[state, action] - q_avg[state, action])
+                    max_q = np.max(q_avg[state])
+                    best_actions = np.where(q_avg[state] == max_q)[0]
+                    policy[state, best_actions] = 1 / len(best_actions)
+
+                if len(best_actions) == 1:
+                    if action == best_actions[0]:
+                        W = W * (1 / behavior_policy[state, action])
                 else:
                     break
-
-        return q, policy
+        if Polyak_Ruppert:
+            return q_avg, policy
+        else:
+            return q, policy

@@ -20,6 +20,7 @@ class TD:
 
     def sarsa(self, gamma=0.99, alpha=0.1, epsilon=0.1, max_episode_num = 100, max_episode_length = 1000, epsilon_greedy = True):
         q = np.random.randn(self.env.state_space_dim, self.env.action_space_dim)
+        self.policy_class.iter_num = 0
         policy = self.policy_class.epsilon_greedy_policy(q, epsilon)
         for _ in range(max_episode_num):
             S = self.env.reset()
@@ -40,6 +41,7 @@ class TD:
     
     def q_learning(self, gamma=0.99, alpha=0.1, epsilon=0.1, max_episode_num = 100, max_episode_length = 1000, epsilon_greedy = True):
         q = np.random.randn(self.env.state_space_dim, self.env.action_space_dim)
+        self.policy_class.iter_num = 0
         policy = self.policy_class.epsilon_greedy_policy(q, epsilon)
         for _ in range(max_episode_num):
             S = self.env.reset()
@@ -59,6 +61,7 @@ class TD:
     def double_q_learning(self, gamma=0.99, alpha=0.1, epsilon=0.1, max_episode_num = 100, max_episode_length = 1000, epsilon_greedy = True):
         q1 = np.random.randn(self.env.state_space_dim, self.env.action_space_dim)
         q2 = np.random.randn(self.env.state_space_dim, self.env.action_space_dim)
+        self.policy_class.iter_num = 0
         policy = self.policy_class.epsilon_greedy_policy(q1+q2, epsilon)
         for _ in range(max_episode_num):
             S = self.env.reset()

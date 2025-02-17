@@ -4,6 +4,7 @@ from collections import deque
 class Policy:
     def __init__(self, env):
         self.env = env
+        self.iter_num = 0
 
     def uniform_random_policy(self):
         return np.ones((self.env.state_space_dim, self.env.action_space_dim)) / self.env.action_space_dim
@@ -13,9 +14,11 @@ class Policy:
         policy[np.arange(self.env.state_space_dim), np.argmax(q, axis = 1)] = 1
         return policy
 
-    def epsilon_greedy_policy(self, q, epsilon):
+    def epsilon_greedy_policy(self, q, epsilon, epsilon_decay = 0.99):
+        epsilon *= epsilon_decay ** (self.iter_num // 100)
         policy = np.ones((self.env.state_space_dim, self.env.action_space_dim)) * epsilon / self.env.action_space_dim
         policy[np.arange(self.env.state_space_dim), np.argmax(q, axis = 1)] += 1 - epsilon
+        self.iter_num += 1
         return policy
 
 def rollout(env, policy, initial_state = None, initial_action = None, max_episode_length = 1000):
