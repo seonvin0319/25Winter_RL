@@ -1,0 +1,31 @@
+# 환경 설정
+env:
+  name: 'CartPole-v1'
+  render_mode: null  # null, 'human', 'rgb_array'
+
+# 모델 아키텍처
+model:
+  hidden_dim: 128
+  device: 'cuda'  # 'cuda' if available else 'cpu'
+
+# 학습 하이퍼파라미터
+train:
+  lr: 1.0e-3
+  gamma: 0.99
+  epsilon: 1.0
+  epsilon_min: 0.01
+  epsilon_decay: 0.995
+  buffer_size: 10000
+  update_freq: 100
+  target_hard_update: false
+  batch_size: 64
+  max_episodes: 10000
+  max_steps: 1000
+
+# 저장/로드 설정
+save:
+  model: false
+  model_path: './model.pth'
+  make_csv: false
+  csv_path: './train_data.csv'
+  load_model: null

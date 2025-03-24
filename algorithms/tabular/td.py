@@ -1,9 +1,10 @@
 import numpy as np
-from utils import Policy
+from utils.tabular_utils import TabularPolicy
+
 class TD:
     def __init__(self, env):
         self.env = env
-        self.policy_class = Policy(env)
+        self.policy_class = TabularPolicy(env)
 
     def td_prediction(self, policy, gamma=0.99, alpha=0.1, max_episode_num = 100, max_episode_length = 1000):
         """
@@ -62,7 +63,7 @@ class TD:
                 if done:
                     break
         return q, policy
-    
+
     def q_learning(self, gamma=0.99, alpha=0.1, epsilon=0.1, max_episode_num = 100, max_episode_length = 1000, epsilon_greedy = True):
         """
         Parameters
@@ -97,7 +98,7 @@ class TD:
                 if done:
                     break
         return q, policy
-    
+
     def double_q_learning(self, gamma=0.99, alpha=0.1, epsilon=0.1, max_episode_num = 100, max_episode_length = 1000, epsilon_greedy = True):
         """
         Parameters

@@ -1,11 +1,11 @@
 import numpy as np
 from tqdm import tqdm
-from utils import Policy, rollout
+from utils.tabular_utils import TabularPolicy, rollout
 
 class Monte_Carlo:
     def __init__(self, env):
         self.env = env
-        self.policy_class = Policy(env)
+        self.policy_class = TabularPolicy(env)
 
     def first_visit_mc_prediction(self, policy, max_episode_num = 100, max_episode_length = 1000, gamma = 0.99, show_progress = False):
         """

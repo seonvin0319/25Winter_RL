@@ -1,7 +1,7 @@
 import numpy as np
 from collections import deque
 
-class Policy:
+class TabularPolicy:
     def __init__(self, env):
         self.env = env
         self.iter_num = 0

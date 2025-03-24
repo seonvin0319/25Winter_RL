@@ -1,9 +1,10 @@
 import numpy as np
-from utils import Policy
+from utils.tabular_utils import TabularPolicy
+
 class Dynamic_Programming:
     def __init__(self, env):
         self.env = env
-        self.policy_class = Policy(env)
+        self.policy_class = TabularPolicy(env)
 
     def policy_eval(self, policy, gamma=0.99, threshold=1e-3, max_iter=1000, history=False):
 
@@ -131,7 +132,7 @@ class Dynamic_Programming:
                         q[state, action] += p_sas[next_state] * (self.env.reward[state, next_state] + gamma * v[next_state])
             return q, policy
         return v, policy
-    
+
     def value_iteration(self, gamma=0.99, threshold=1e-3, max_iter=10, return_q = False):
         """
         Parameters
