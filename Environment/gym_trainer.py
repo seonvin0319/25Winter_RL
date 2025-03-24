@@ -91,7 +91,7 @@ class GymTrainer:
             steps = 1
 
             for t in range(max_episode_length):
-                action = agent.decide(observation)
+                action = agent.sample_action(observation)
                 next_observation, reward, done, info = self.env.step(action)
                 observation = next_observation
                 episode_return += reward

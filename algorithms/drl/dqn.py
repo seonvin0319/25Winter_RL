@@ -12,14 +12,14 @@ class MLP(nn.Module):
         self.activation = nn.ReLU()
         self.fc1 = nn.Linear(state_dim, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, action_dim)
-        self.network = nn.Sequential(
+        self.mlp = nn.Sequential(
             self.fc1,
             self.activation,
             self.fc2
         )
 
     def forward(self, x):
-        return self.network(x)
+        return self.mlp(x)
 
 class ReplayBuffer:
     def __init__(self, capacity = 10000):
@@ -43,31 +43,34 @@ class ReplayBuffer:
         return len(self.buffer)
 
 class DQN:
-    def __init__(self, state_dim, action_dim, hidden_dim = 128, device='cuda' if torch.cuda.is_available() else 'cpu', lr = 1e-3, gamma = 0.99, eps = 1.0, eps_min = 0.01, eps_decay = 0.995, buffer_capacity = 10000, update_frequency = 100, target_net_hard_update = True):
+    def __init__(self, state_dim, action_dim, hidden_dim = 128, buffer_capacity = 10000, lr = 1e-3, gamma = 0.99, eps = 1.0, eps_min = 0.01, eps_decay = 0.995, update_frequency = 100, target_net_hard_update = True, device= None):
         super(DQN, self).__init__()
+
+        if device is None:
+            self.device = 'cpu'
+        else:
+            self.device = device
+
         self.state_dim = state_dim
         self.action_dim = action_dim
-        self.update_counter = 0
-        self.device = device
-        self.q_net = MLP(state_dim, action_dim, hidden_dim).to(device)
-        self.q_target = MLP(state_dim, action_dim, hidden_dim).to(device)
+        self.q_net = MLP(state_dim, action_dim, hidden_dim).to(self.device)
+        self.q_target = MLP(state_dim, action_dim, hidden_dim).to(self.device)
+
+        self.replay_buffer = ReplayBuffer(buffer_capacity)
+
         self.optimizer = optim.Adam(self.q_net.parameters(), lr=lr, weight_decay=1e-3)
         self.gamma = gamma
-        self.replay_buffer = ReplayBuffer(buffer_capacity)
         self.eps = eps
         self.eps_min = eps_min
         self.eps_decay = eps_decay
         self.update_frequency = update_frequency
         self.target_net_hard_update = target_net_hard_update
+        self.update_counter = 0
         self.update_target_network(tau = 1.0)
 
-    def update_target_network(self, tau = 0.005):
-        if self.target_net_hard_update:
-            for param, target_param in zip(self.q_net.parameters(), self.q_target.parameters()):
-                target_param.data.copy_(param.data)
-        else:
-            for target_param, param in zip(self.q_target.parameters(), self.q_net.parameters()):
-                target_param.data.copy_(tau * param.data + (1 - tau) * target_param.data)
+    def _loss_info(self):
+        """CSV 파일의 헤더 정보 반환"""
+        return ['loss']
 
     def sample_action(self, state):
         if random.random() < self.eps:
@@ -80,6 +83,14 @@ class DQN:
 
     def decay_epsilon(self):
         self.eps = max(self.eps_min, self.eps * self.eps_decay)
+
+    def update_target_network(self, tau = 0.005):
+        if self.target_net_hard_update:
+            for param, target_param in zip(self.q_net.parameters(), self.q_target.parameters()):
+                target_param.data.copy_(param.data)
+        else:
+            for target_param, param in zip(self.q_target.parameters(), self.q_net.parameters()):
+                target_param.data.copy_(tau * param.data + (1 - tau) * target_param.data)
 
     def update(self, batch_size):
         self.q_net.train()
@@ -114,8 +125,8 @@ class DQN:
 
         return [loss.item()]
 
-def save_model(model, path):
-    torch.save(model.state_dict(), path)
+    def save_model(self, path):
+        torch.save(self.q_net.state_dict(), path)
 
-def load_model(model, path):
-    model.load_state_dict(torch.load(path))
+    def load_model(self, path):
+        self.q_net.load_state_dict(torch.load(path))

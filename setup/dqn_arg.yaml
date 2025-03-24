@@ -6,7 +6,7 @@ env:
 # 모델 아키텍처
 model:
   hidden_dim: 128
-  device: 'cuda'  # 'cuda' if available else 'cpu'
+  device: null
 
 # 학습 하이퍼파라미터
 train:
@@ -25,7 +25,7 @@ train:
 # 저장/로드 설정
 save:
   model: false
-  model_path: './model.pth'
+  model_path: './results/dqn/model.pth'
   make_csv: false
-  csv_path: './train_data.csv'
+  csv_path: './results/dqn/train_data.csv'
   load_model: null
