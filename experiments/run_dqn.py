@@ -6,7 +6,7 @@ from environment.gym_trainer import GymTrainer
 
 def load_config(config_path):
     """YAML 설정 파일 로드"""
-    with open(config_path, 'r') as f:
+    with open(config_path, "r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
     return config
 

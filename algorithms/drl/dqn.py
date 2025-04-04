@@ -26,6 +26,7 @@ class ReplayBuffer:
         self.buffer = deque(maxlen=capacity)
 
     def push(self, state, action, reward, next_state, done):
+        
         if len(self.buffer) == self.buffer.maxlen:
             self.buffer.popleft()
         self.buffer.append((state, action, reward, next_state, done))
@@ -130,3 +131,6 @@ class DQN:
 
     def load_model(self, path):
         self.q_net.load_state_dict(torch.load(path))
+
+    def eval(self):
+        self.q_net.eval()

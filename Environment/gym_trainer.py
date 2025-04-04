@@ -1,5 +1,6 @@
 import gym
 import csv
+import os
 
 class GymTrainer:
     def __init__(self, env_name, render_mode=None):
@@ -23,8 +24,9 @@ class GymTrainer:
 
     def _init_env(self):
         """환경 초기화"""
-        self.env = gym.make(self.env_name, render_mode=self.render_mode, new_step_api=True)
-        return self.env.reset()
+        self.env = gym.make(self.env_name, render_mode=self.render_mode)
+        observation, _ = self.env.reset()
+        return observation
 
     def _save_to_csv(self, csv_dir, data):
         """CSV 파일에 데이터 저장"""
@@ -46,6 +48,7 @@ class GymTrainer:
 
         if make_csv:
             csv_dir = './train_data.csv' if csv_dir is None else csv_dir + '.csv'
+            os.makedirs(os.path.dirname(csv_dir), exist_ok=True)
             with open(csv_dir, 'w') as f:
                 writer = csv.writer(f)
                 writer.writerow(agent._loss_info())
@@ -74,8 +77,13 @@ class GymTrainer:
                     break
 
             if save_model:
-                model_dir = './model.pth' if model_dir is None else model_dir + '.pth'
-                agent.save_model(model_dir)
+                if model_dir is None:
+                    model_path = './model.pth'
+                elif not model_dir.endswith('.pth'):
+                    model_path = model_dir + '.pth'
+                else:
+                    model_path = model_dir
+                agent.save_model(model_path)
 
             print(f'Episode {episode} Return: {episode_return} Steps: {steps}')
 
@@ -92,7 +100,8 @@ class GymTrainer:
 
             for t in range(max_episode_length):
                 action = agent.sample_action(observation)
-                next_observation, reward, done, info = self.env.step(action)
+                next_observation, reward, term, trunc, info = self.env.step(action)
+                done = term or trunc
                 observation = next_observation
                 episode_return += reward
                 steps += 1

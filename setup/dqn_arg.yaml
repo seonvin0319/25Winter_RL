@@ -24,8 +24,8 @@ train:
 
 # 저장/로드 설정
 save:
-  model: false
+  model: true
   model_path: './results/dqn/model.pth'
-  make_csv: false
+  make_csv: true
   csv_path: './results/dqn/train_data.csv'
   load_model: null
